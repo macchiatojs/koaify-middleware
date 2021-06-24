@@ -1,46 +1,46 @@
-# @macchiatojs/middleware
+# @macchiatojs/koaify-middleware
 
-The modern **Express-Style** middleware composition.
+The modern **Koa-Style** middleware composition.
 
 ## `Installation`
 
 ```bash
 # npm
-$ npm install @macchiatojs/middleware
+$ npm install @macchiatojs/koaify-middleware
 # yarn
-$ yarn add @macchiatojs/middleware
+$ yarn add @macchiatojs/koaify-middleware
 ```
 
 ## `Usage`
 
 ```typescript
-import Middleware from "@macchiatojs/middleware";
+import Middleware from "@macchiatojs/koaify-middleware";
 
 const middleware = new Middleware();
 
-middleware.push((req, res, next) => {
-  req.arr.push(1);
+middleware.push((ctx, next) => {
+  ctx.arr.push(1);
   return next().then(() => {
-    req.arr.push(6);
+    ctx.arr.push(6);
   });
 });
 
-middleware.push(async (req, res, next) => {
-  req.arr.push(2);
+middleware.push(async (ctx, next) => {
+  ctx.arr.push(2);
   await next();
-  req.arr.push(5);
+  ctx.arr.push(5);
 });
 
-middleware.push((req, res, next) => {
-  req.arr.push(3);
+middleware.push((ctx, next) => {
+  ctx.arr.push(3);
   next();
-  req.arr.push(4);
+  ctx.arr.push(4);
 });
 
-const req = { arr: [] };
-const res = {};
-await middleware.compose(req, res);
-console.log(req.arr.toString() === "1,2,3,4,5,6");
+const ctx = { arr: [] };
+
+await middleware.compose(ctx);
+console.log(ctx.arr.toString() === "1,2,3,4,5,6");
 // true
 ```
 
