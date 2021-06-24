@@ -1,5 +1,5 @@
 /**
- * @macchiatojs/middleware
+ * @macchiatojs/koaify-middleware
  *
  * Copyright(c) 2021 Imed Jaberi
  * MIT Licensed
@@ -12,7 +12,7 @@
  */
 
 export type NextFunc = () => Promise<any>;
-export type MiddlewareFunc<Request, Response> = (request: Request, response: Response, next: NextFunc) => any
+export type MiddlewareFunc<Context> = (context: Context, next: NextFunc) => any
 
 /**
  * modern middleware composition.
@@ -20,31 +20,30 @@ export type MiddlewareFunc<Request, Response> = (request: Request, response: Res
  * @param {Object} options
  * @api public
  */
-class Middleware <Request, Response> extends Array {
+class Middleware <Context> extends Array {
   #next (
-    request: Request,
-    response: Response,
+    context: Context,
     last?: NextFunc,
     index = 0,
     done = false,
     called = false,
-    fn?: MiddlewareFunc<Request, Response>
+    fn?: MiddlewareFunc<Context>
   ) {
     /* istanbul ignore next */
     if ((done = index > this.length)) return
 
     fn = this[index] || last
 
-    return fn && fn(request, response, () => {
+    return fn && fn(context, () => {
       if (called) throw new Error('next() called multiple times')
       called = true
-      return Promise.resolve(this.#next(request, response, last, index + 1))
+      return Promise.resolve(this.#next(context, last, index + 1))
     })
   }
 
-  compose (request: Request, response: Response, last?: NextFunc) {
+  compose (context: Context, last?: NextFunc) {
     try {
-      return Promise.resolve(this.#next(request, response, last))
+      return Promise.resolve(this.#next(context, last))
     } catch (err) {
       return Promise.reject(err)
     }
