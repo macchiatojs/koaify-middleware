@@ -3,7 +3,7 @@ import Middleware from '../src'
 
 describe('middleware', () => {
   // TODO: to fix these unkonwn types.
-  let context: Middleware<unknown, unknown>
+  let context: Middleware<unknown>
 
   beforeEach(() => {
     context = new Middleware()
@@ -17,18 +17,18 @@ describe('middleware', () => {
 
   it('middleware compose should return result and not throws', () => {
     const middleware = context
-    expect(() => middleware.compose(null, null)).to.not.throws()
+    expect(() => middleware.compose(null)).to.not.throws()
   })
 
   it('middleware compose should return result and throws', () => {
     const middleware = context
-    middleware.push((req, res, next) => {
-      req.a = 1
+    middleware.push((ctx, next) => {
+      ctx.a = 1
       next()
       next()
     })
 
-    middleware.compose({}, {}).catch((result) => {
+    middleware.compose({}).catch((result) => {
       expect(result).to.be.equal(/next() called multiple times/)
     })     
   })
@@ -36,35 +36,34 @@ describe('middleware', () => {
   it('iterator', async () => {
     const middleware = context
     
-    middleware.push((req, res, next) => {
-      req.arr.push(1)
+    middleware.push((ctx, next) => {
+      ctx.arr.push(1)
       return next().then(() => {
-        res.sended = true
-        req.arr.push(6)
+        ctx.sended = true
+        ctx.arr.push(6)
       })
     })
 
-    middleware.push(async (req, res, next) => {
-      req.arr.push(2)
+    middleware.push(async (ctx, next) => {
+      ctx.arr.push(2)
       await next()
-      req.arr.push(5)
+      ctx.arr.push(5)
     })
 
-    middleware.push((req, res, next) => {
-      req.arr.push(3)
+    middleware.push((ctx, next) => {
+      ctx.arr.push(3)
       next()
-      req.arr.push(4)
+      ctx.arr.push(4)
     })
   
     const iter = middleware[Symbol.iterator]()
 
     expect(typeof iter.next).to.equal('function')
 
-    const req = { arr: [] }
-    const res = {}
+    const ctx = { arr: [] }
   
-    await middleware.compose(req, res)
+    await middleware.compose(ctx)
   
-    expect(req.arr).to.deep.equal([1, 2, 3, 4, 5, 6])
+    expect(ctx.arr).to.deep.equal([1, 2, 3, 4, 5, 6])
   })
 })
