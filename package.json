@@ -1,7 +1,7 @@
 {
-  "name": "agnostic-middleware",
-  "version": "0.0.0",
-  "description": "The Modern (ES6) Middleware Composition.",
+  "name": "@macchiatojs/koaify-middleware",
+  "version": "0.1.0",
+  "description": "The modern koaify middleware composition.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -23,10 +23,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/3imed-jaberi/agnostic-middleware.git"
+    "url": "git+https://github.com/macchiatojs/koaify-middleware.git"
   },
   "keywords": [
     "middleware",
+    "koaify",
+    "koa-style",
+    "koa-compose",
     "compose",
     "iterator"
   ],
@@ -54,7 +57,7 @@
     "node": ">= 14"
   },
   "bugs": {
-    "url": "https://github.com/3imed-jaberi/agnostic-middleware/issues"
+    "url": "https://github.com/macchiatojs/koaify-middleware/issues"
   },
-  "homepage": "https://github.com/3imed-jaberi/agnostic-middleware#readme"
+  "homepage": "https://github.com/macchiatojs/koaify-middleware#readme"
 }
