@@ -11,8 +11,7 @@
  * decalre types.
  */
 
-export type NextFunc = () => Promise<any>;
-export type MiddlewareFunc<Context> = (context: Context, next: NextFunc) => any
+export type Next = () => Promise<any>;
 
 /**
  * modern middleware composition.
@@ -20,14 +19,14 @@ export type MiddlewareFunc<Context> = (context: Context, next: NextFunc) => any
  * @param {Object} options
  * @api public
  */
-class Middleware <Context> extends Array {
+class Middleware <Context = unknown> extends Array {
   #next (
     context: Context,
-    last?: NextFunc,
+    last?: Next,
     index = 0,
     done = false,
     called = false,
-    fn?: MiddlewareFunc<Context>
+    fn?: (context: Context, next: Next) => any
   ) {
     /* istanbul ignore next */
     if ((done = index > this.length)) return
@@ -41,7 +40,7 @@ class Middleware <Context> extends Array {
     })
   }
 
-  compose (context: Context, last?: NextFunc) {
+  compose (context: Context, last?: Next) {
     try {
       return Promise.resolve(this.#next(context, last))
     } catch (err) {
